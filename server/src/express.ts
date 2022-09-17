@@ -6,6 +6,7 @@ import compress from 'compression'
 
 import userRoutes from './routes/user.route'
 import authRoutes from './routes/auth.route'
+import courseRoutes from './routes/course.route'
 
 import { errorHandler } from "./middleware/errorhandler";
 import { invalidRouteHandler } from "./middleware/norouteHandler";
@@ -21,6 +22,8 @@ app.use(compress())
 // mount routes
 app.use('/', userRoutes)
 app.use('/', authRoutes)
+app.use('/', courseRoutes)
+
 
 app.use(errorHandler);
 

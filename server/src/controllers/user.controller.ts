@@ -41,18 +41,22 @@ const list = async (req: Request, res: Response) => {
   }
 };
 
-const read = async (req: Request, res: Response) => {
+const userByID = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  id: string
+) => {
   try {
-    let user = await User.findById(req.params.id).select(
-      "name email updatedAt createdAt"
-    );
+    let user = await User.findById(id).select("name email updatedAt createdAt");
 
     if (!user)
       return res.status(400).json({
         error: "User not found",
       });
 
-    return res.json(user);
+    res.locals.profile = user;
+    next();
   } catch (err) {
     return res.status(400).json({
       error: "Could not retrieve user",
@@ -60,36 +64,40 @@ const read = async (req: Request, res: Response) => {
   }
 };
 
+const read = (req: Request, res: Response) => {
+  return res.json(res.locals.profile);
+};
+
 const update = async (req: Request, res: Response, next: NextFunction) => {
-  const userId = req.params.id;
+  const userId = req.params.userId;
   const update = req.body;
-  if (req.params.id === res.locals.auth.id) {
-    try {
-      const updatedUser = await User.findOneAndUpdate({ _id: userId }, update, {
-        new: true,
-      });
-      res.status(200).json(updatedUser);
-    } catch (err) {
-      next(err);
-    }
-  } else {
-    return res.status(403).json({
-      error: "You can update only your account!",
+  try {
+    const updatedUser = await User.findOneAndUpdate({ _id: userId }, update, {
+      new: true,
     });
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    next(err);
   }
 };
 
 const remove = async (req: Request, res: Response, next: NextFunction) => {
-  if (req.params.id === res.locals.auth.id) {
-    try {
-      await User.findByIdAndDelete(req.params.id);
-      res.status(200).json("User has been deleted.");
-    } catch (err) {
-      next(err);
-    }
-  } else {
-    return res.status(403).json("You can delete only your account!");
+  try {
+    await User.findByIdAndDelete(req.params.userId);
+    res.status(200).json("User has been deleted.");
+  } catch (err) {
+    next(err);
   }
 };
 
-export default { create, read, list, remove, update };
+const isEducator = (req: Request, res: Response, next: NextFunction) => {
+  const isEducator = res.locals.profile && res.locals.profile.educator;
+  if (!isEducator) {
+    return res.status(403).json({
+      error: "User is not an educator",
+    });
+  }
+  next();
+};
+
+export default { create, userByID, read, list, remove, update, isEducator };

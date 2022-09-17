@@ -27,3 +27,13 @@ export const verifyToken = (
     next(error);
   }
 };
+
+export const isOwner = (req: Request, res: Response, next: NextFunction) => {
+  if (req.params.userId === res.locals.auth.id) {
+    next();
+  } else {
+    return res.status(403).json({
+      error: "User is not authorized",
+    });
+  }
+};
