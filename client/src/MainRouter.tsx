@@ -11,6 +11,8 @@ import Signin from "auth/Signin";
 import Profile from "user/Profile";
 import EditProfile from "user/EditProfile";
 import NewCourse from "course/NewCourse";
+import MyCourses from "course/MyCourse";
+import Course from "course/Course";
 
 const MainRouter = () => {
   return (
@@ -30,14 +32,23 @@ const MainRouter = () => {
             </ProtectedRoute>
           }
         />
-
         <Route path="/user/:userId" element={<Profile />} />
+
+        <Route path="/teach/course/:courseId" element={<Course />} />
 
         <Route
           path="/teach/course/new"
           element={
             <ProtectedRoute>
               <NewCourse />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/teach/courses"
+          element={
+            <ProtectedRoute>
+              <MyCourses />
             </ProtectedRoute>
           }
         />

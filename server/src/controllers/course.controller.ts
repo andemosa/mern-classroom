@@ -142,7 +142,7 @@ const isInstructor = (req: Request, res: Response, next: NextFunction) => {
   const isInstructor =
     res.locals.course &&
     res.locals.auth &&
-    res.locals.course.instructor._id == res.locals.auth._id;
+    res.locals.course.instructor._id.toString() === res.locals.auth.id.toString();
   if (!isInstructor) {
     return res.status(403).json({
       error: "User is not authorized",

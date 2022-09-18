@@ -48,7 +48,7 @@ const userByID = async (
   id: string
 ) => {
   try {
-    let user = await User.findById(id).select("name email updatedAt createdAt");
+    let user = await User.findById(id);
 
     if (!user)
       return res.status(400).json({
