@@ -1,66 +1,115 @@
-// import { makeStyles } from '@material-ui/core/styles'
-// import Card from '@material-ui/core/Card'
-// import CardContent from '@material-ui/core/CardContent'
-// import CardMedia from '@material-ui/core/CardMedia'
-// import Typography from '@material-ui/core/Typography'
-import { Card, Typography, CardMedia, CardContent } from "@mui/material";
+import { Card, Typography } from "@mui/material";
+import { useState, useEffect } from "react";
 
-import unicornbikeImg from "assets/images/unicornbike.jpg";
+import auth from "auth/auth-helper";
+import { listPublished } from "course/api-course";
+import Courses from "course/Courses";
 
 export default function Home() {
+  const jwt = auth.isAuthenticated();
+  const [courses, setCourses] = useState([]);
+  const [enrolled, setEnrolled] = useState([]);
+  // useEffect(() => {
+  //   const abortController = new AbortController();
+  //   const signal = abortController.signal;
+  //   listEnrolled({ t: jwt.token }, signal).then((data:any) => {
+  //     if (data.error) {
+  //       console.log(data.error);
+  //     } else {
+  //       setEnrolled(data);
+  //     }
+  //   });
+  //   return function cleanup() {
+  //     abortController.abort();
+  //   };
+  // }, []);
+  useEffect(() => {
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+    listPublished(signal).then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        setCourses(data);
+      }
+    });
+    return function cleanup() {
+      abortController.abort();
+    };
+  }, []);
   return (
-    <Card
-      sx={{
-        maxWidth: 600,
-        margin: "auto",
-        marginTop: 5,
-        marginBottom: 5,
+    <div
+      style={{
+        marginTop: 12,
       }}
     >
-      <Typography
-        variant="h6"
-        sx={{
-          padding: 3,
-        }}
-      >
-        Home Page
-      </Typography>
-      <CardMedia
-        sx={{
-          minHeight: 400,
-        }}
-        image={unicornbikeImg}
-        title="Unicorn Bicycle"
-      />
-      <Typography
-        variant="body2"
-        component="p"
-        sx={{
-          padding: 2,
-          textAlign: "right",
-          backgroundColor: "#ededed",
-          borderBottom: "1px solid #d0d0d0",
-          "& a": {
-            color: "#3f4771",
-          },
-        }}
-        color="textSecondary"
-      >
-        Photo by{" "}
-        <a
-          href="https://unsplash.com/@boudewijn_huysmans"
-          target="_blank"
-          rel="noopener noreferrer"
+      {auth.isAuthenticated().user && (
+        <Card
+          sx={{
+            width: "90%",
+            margin: "auto",
+            marginTop: 20,
+            marginBottom: 2,
+            padding: 20,
+            backgroundColor: "#616161",
+          }}
         >
-          Boudewijn Huysmans
-        </a>{" "}
-        on Unsplash
-      </Typography>
-      <CardContent>
-        <Typography variant="body1" component="p">
-          Welcome to the MERN Social home page.
+          <Typography
+            variant="h6"
+            component="h2"
+            sx={{
+              color: "#efefef",
+              marginBottom: 5,
+            }}
+          >
+            Courses you are enrolled in
+          </Typography>
+          {enrolled.length != 0 ? // <Enrollments enrollments={enrolled} />
+          null : (
+            <Typography
+              variant="body1"
+              sx={{
+                color: "lightgrey",
+                marginBottom: 12,
+                marginLeft: 8,
+              }}
+            >
+              No courses.
+            </Typography>
+          )}
+        </Card>
+      )}
+      <Card
+        sx={{
+          width: "90%",
+          margin: "auto",
+          marginTop: 20,
+          marginBottom: 2,
+          padding: 20,
+          backgroundColor: "#ffffff",
+        }}
+      >
+        <Typography variant="h5" component="h2">
+          All Courses
         </Typography>
-      </CardContent>
-    </Card>
+        {courses.length !== 0 && courses.length !== enrolled.length ? (
+          <Courses
+            courses={courses}
+            // common={enrolled}
+          />
+        ) : (
+          <Typography
+            variant="body1"
+            sx={{
+              color: "lightgrey",
+              marginBottom: 12,
+              marginLeft: 8,
+            }}
+          >
+            No new courses.
+          </Typography>
+        )}
+      </Card>
+    </div>
   );
 }

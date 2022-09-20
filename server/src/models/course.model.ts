@@ -1,4 +1,4 @@
-import { Model, Schema, model, Types } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 interface ILesson {
   title: string;

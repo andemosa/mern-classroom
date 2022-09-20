@@ -24,6 +24,7 @@ import auth from "auth/auth-helper";
 import { read, update } from "./api-course";
 import { ICourse } from "types/Course";
 import NewLesson from "./NewLesson";
+import DeleteCourse from "./DeleteCourse";
 
 export default function Course() {
   let params = useParams();
@@ -191,7 +192,7 @@ export default function Course() {
                             ? "Add atleast 1 lesson to publish"
                             : "Publish"}
                         </Button>
-                        {/* <DeleteCourse course={course} onRemove={removeCourse} /> */}
+                        <DeleteCourse course={course} onRemove={removeCourse} />
                       </>
                     ) : (
                       <Button color="primary" variant="outlined">
